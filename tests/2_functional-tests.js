@@ -37,18 +37,26 @@ suite("Functional Tests", function () {
         .put("/travellers")
         .send({surname: "Colombo"})
         .end(function (err, res) {
-          console.log(res.body)
           assert.equal(res.status, 200, 'req status should be 200');
-          assert.typeOf(res.body, 'object', 'it should be a object (?)')
-          assert.propertyVal(res.body, 'name', 'Cristoforo', 'should be Cristóvão');
-          assert.propertyVal(res.body, 'surname', 'Colombo', 'should be Colombo');
+          assert.equal(res.type, 'application/json', 'it should be a application/json')
+          assert.equal(res.body.name, 'Cristoforo', 'should be Cristóvão');
+          assert.equal(res.body.surname, 'Colombo', 'should be Colombo');
         
           done();
         });
     });
     // #4
     test('send {surname: "da Verrazzano"}', function (done) {
-      assert.fail();
+      chai
+        .request(server)
+        .put('/travellers')
+        .send({surname: 'da Verrazzano'})
+        .end((err, res) => {
+          assert.equal(res.status, 200, 'req status should be 200');
+          assert.equal(res.type, 'application/json', 'it should be a application/json')
+          assert.equal(res.body.name, 'Giovanni', 'should be Giovanni');
+          assert.equal(res.body.surname, 'da Verrazzano', 'should be da Verrazzano');
+        })
 
       done();
     });
@@ -57,22 +65,41 @@ suite("Functional Tests", function () {
 
 const Browser = require("zombie");
 
+const browser = new Browser()
+browser.site = 'https://salty-tundra-83281.herokuapp.com'
+
+
+// browser.site = 'http://localhost:3000'
+
+suiteSetup(function (done) {
+  return browser.visit('/', done)
+})
+
 suite("Functional Tests with Zombie.js", function () {
 
   suite('"Famous Italian Explorers" form', function () {
     // #5
     test('submit "surname" : "Colombo" - write your e2e test...', function (done) {
-      browser.fill("surname", "Colombo").pressButton("submit", function () {
-        assert.fail();
-
-        done();
-      });
+      browser.fill("surname", "Colombo").pressButton('submit', function () {
+        browser.assert.success()
+        browser.assert.text('span#name', 'Cristoforo', 'should be Cristoforo')
+        browser.assert.text('span#surname', 'Colombo')
+        browser.assert.element('span#dates', 1)
+      
+        done()
+      })
     });
+
     // #6
     test('submit "surname" : "Vespucci" - write your e2e test...', function (done) {
-      assert.fail();
-
-      done();
+      browser.fill("surname", "Vespucci").pressButton('submit', function () {
+          browser.assert.success()
+          browser.assert.text('span#name', 'Amerigo', 'should be Amerigo')
+          browser.assert.text('span#surname', 'Vespucci')
+          browser.assert.element('span#dates', 1)
+        
+          done()
+        })
     });
   });
 });
