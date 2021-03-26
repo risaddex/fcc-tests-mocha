@@ -1,9 +1,9 @@
 FROM node:12.18-alpine
 #create root
-RUN mkdir -p /app
+RUN mkdir -p /user/src/app
 WORKDIR /app
 # move src
 COPY . .
 RUN npm install
-CMD ["npm", "start"]
 EXPOSE 3000
+CMD ["npm", "start"]
