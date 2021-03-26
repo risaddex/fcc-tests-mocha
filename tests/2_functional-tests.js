@@ -31,15 +31,18 @@ suite("Functional Tests", function () {
         });
     });
     // #3
-    test('send {surname: "Colombo"}', function (done) {
+    test('send {"surname": "Colombo"}', function (done) {
       chai
         .request(server)
         .put("/travellers")
-
+        .send({surname: "Colombo"})
         .end(function (err, res) {
-          assert.equal(res.status, 200);
-          assert.equal(res.text, '{}', 'be empty as put doesnt give res')
-
+          console.log(res.body)
+          assert.equal(res.status, 200, 'req status should be 200');
+          assert.typeOf(res.body, 'object', 'it should be a object (?)')
+          assert.propertyVal(res.body, 'name', 'Cristoforo', 'should be Cristóvão');
+          assert.propertyVal(res.body, 'surname', 'Colombo', 'should be Colombo');
+        
           done();
         });
     });

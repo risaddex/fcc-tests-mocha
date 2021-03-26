@@ -6,8 +6,8 @@ const cors = require('cors');
 const runner = require('./test-runner');
 const port = process.env.PORT || 3000
 
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}))
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
